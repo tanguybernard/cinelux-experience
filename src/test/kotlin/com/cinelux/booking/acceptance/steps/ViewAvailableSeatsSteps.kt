@@ -1,7 +1,6 @@
 package com.cinelux.booking.acceptance.steps
 
-import com.cinelux.booking.acceptance.fake.FakeBookingRepository
-import com.cinelux.booking.acceptance.fake.FakeShowTimeRepository
+import com.cinelux.booking.acceptance.TestContext
 import com.cinelux.booking.application.port.api.AvailableSeatsResult
 import com.cinelux.booking.application.port.api.FindAvailableSeatsQuery
 import com.cinelux.booking.application.port.api.FindAvailableSeatsUseCase
@@ -21,25 +20,22 @@ import java.time.temporal.ChronoUnit
 
 class ViewAvailableSeatsSteps {
 
-    private lateinit var showTimeRepository: FakeShowTimeRepository
-    private lateinit var bookingRepository: FakeBookingRepository
     private lateinit var findAvailableSeatsUseCase: FindAvailableSeatsUseCase
-
-    private var currentShowTimeId: ShowTimeId? = null
-    private var allConfiguredSeats: List<Seat> = emptyList()
     private var result: AvailableSeatsResult? = null
 
-    @Before
+    @Before(order = 0)
     fun setup() {
-        showTimeRepository = FakeShowTimeRepository()
-        bookingRepository = FakeBookingRepository()
-        findAvailableSeatsUseCase = FindAvailableSeatsUseCaseImpl(showTimeRepository, bookingRepository)
+        TestContext.reset()
+        findAvailableSeatsUseCase = FindAvailableSeatsUseCaseImpl(
+            TestContext.showTimeRepository,
+            TestContext.bookingRepository
+        )
     }
 
     @Given("{string} is showing at {string} in {string}")
     fun movieIsShowingAtIn(movieTitle: String, time: String, hall: String) {
         val showTimeId = ShowTimeId("show-$movieTitle-$time")
-        currentShowTimeId = showTimeId
+        TestContext.currentShowTimeId = showTimeId
 
         val showTime = ShowTimeReference(
             id = showTimeId,
@@ -48,7 +44,7 @@ class ViewAvailableSeatsSteps {
             hallId = hall
         )
 
-        showTimeRepository.addShowTime(showTime, emptyList())
+        TestContext.showTimeRepository.addShowTime(showTime, emptyList())
     }
 
     @And("the hall has the following seats:")
@@ -66,36 +62,36 @@ class ViewAvailableSeatsSteps {
             }
         }
 
-        allConfiguredSeats = seats
-        currentShowTimeId?.let { showTimeId ->
-            val existingShowTime = showTimeRepository.findById(showTimeId)!!
-            showTimeRepository.addShowTime(existingShowTime, seats)
+        TestContext.allConfiguredSeats = seats
+        TestContext.currentShowTimeId?.let { showTimeId ->
+            val existingShowTime = TestContext.showTimeRepository.findById(showTimeId)!!
+            TestContext.showTimeRepository.addShowTime(existingShowTime, seats)
         }
     }
 
     @Given("the following seats are already booked for {string} at {string}:")
     fun theFollowingSeatsAreAlreadyBookedFor(movie: String, time: String, dataTable: DataTable) {
-        val showTimeId = currentShowTimeId ?: ShowTimeId("show-$movie-$time")
+        val showTimeId = TestContext.currentShowTimeId ?: ShowTimeId("show-$movie-$time")
 
         dataTable.asMaps().forEach { row ->
             val seatCode = row["Seat"]!!
             val seat = parseSeatCode(seatCode)
-            bookingRepository.bookSeat(showTimeId, seat)
+            TestContext.bookingRepository.bookSeat(showTimeId, seat)
         }
     }
 
     @Given("all seats are already booked for {string} at {string}")
     fun allSeatsAreAlreadyBookedFor(movie: String, time: String) {
-        val showTimeId = currentShowTimeId ?: ShowTimeId("show-$movie-$time")
+        val showTimeId = TestContext.currentShowTimeId ?: ShowTimeId("show-$movie-$time")
 
-        allConfiguredSeats.forEach { seat ->
-            bookingRepository.bookSeat(showTimeId, seat)
+        TestContext.allConfiguredSeats.forEach { seat ->
+            TestContext.bookingRepository.bookSeat(showTimeId, seat)
         }
     }
 
     @When("I view available seats for {string} at {string}")
     fun iViewAvailableSeatsFor(movie: String, time: String) {
-        val showTimeId = currentShowTimeId?.value ?: "show-$movie-$time"
+        val showTimeId = TestContext.currentShowTimeId?.value ?: "show-$movie-$time"
 
         result = findAvailableSeatsUseCase.execute(
             FindAvailableSeatsQuery(showTimeId = showTimeId)

@@ -136,4 +136,9 @@ private class FakeBookingRepository(
 ) : BookingRepository {
 
     override fun findBookedSeatsForShowTime(showTimeId: ShowTimeId): List<Seat> = bookedSeats
+
+    override fun existsBookingForSeat(showTimeId: ShowTimeId, seat: Seat): Boolean =
+        bookedSeats.contains(seat)
+
+    override fun save(booking: com.cinelux.booking.domain.model.Booking) = booking
 }
