@@ -11,12 +11,16 @@ A long-term, production-grade cinema seat booking system built with **Domain-Dri
 We strictly enforce separation between:
 - **Domain Layer**: Pure business logic, no framework dependencies
 - **Application Layer**: Use cases orchestrating domain objects
-- **Ports**: Interfaces defining contracts (input/output)
-- **Adapters**: Framework implementations (REST, DB, messaging)
+- **Ports**: Interfaces defining contracts (API = driving / SPI = driven)
+- **Infrastructure**: Framework implementations (REST, DB, messaging)
+
+**Terminology**:
+- **API ports** (`port/api/`) = Driving ports (what application exposes) - Application Programming Interface
+- **SPI ports** (`port/spi/`) = Driven ports (what application needs) - Service Provider Interface
 
 **Critical Rule**: Dependencies flow **inward only**
 ```
-Adapters → Ports → Application → Domain
+Infrastructure → Ports → Application → Domain
 ```
 
 ### Domain-Driven Design
@@ -47,12 +51,12 @@ src/main/kotlin/com/cinelux/
 │   ├── application/            # Use cases
 │   │   ├── usecase/            # Use case implementations
 │   │   └── port/               # Port interfaces
-│   │       ├── input/          # Driving ports (API contracts)
-│   │       └── output/         # Driven ports (Repository, external service contracts)
-│   └── adapter/                # Framework implementations
-│       ├── input/
+│   │       ├── api/            # API ports - Driving ports (what application exposes)
+│   │       └── spi/            # SPI ports - Driven ports (what application needs)
+│   └── infrastructure/         # Framework implementations
+│       ├── api/
 │       │   └── rest/           # REST controllers (Spring)
-│       ├── output/
+│       ├── spi/
 │       │   ├── persistence/    # JPA repositories, entities
 │       │   └── messaging/      # Event publishers
 │       └── config/             # Spring configuration
@@ -61,7 +65,7 @@ src/test/kotlin/com/cinelux/
 ├── booking/
 │   ├── domain/                 # Unit tests (no Spring context)
 │   ├── application/            # Use case tests (mocked ports)
-│   └── adapter/                # Integration tests (Spring Boot Test)
+│   └── infrastructure/         # Integration tests (Spring Boot Test)
 ```
 
 ## Technology Stack
@@ -108,8 +112,22 @@ When adding Spring Boot, use:
 1. Start with domain model (entities, value objects)
 2. Define ports (interfaces for use cases and repositories)
 3. Implement use cases in application layer
-4. Build adapters (REST, persistence) implementing ports
+4. Build infrastructure (REST, persistence) implementing ports
 5. Write tests at each layer
+
+## Claude Workflow
+
+When implementing new features, Claude must:
+
+1. **Create a plan file** (e.g., `PLAN.md`) with:
+   - Implementation steps
+   - Architectural decisions
+   - Files to create/modify
+   - Any open questions
+
+2. **Wait for approval** before writing any code
+
+3. **Delete the plan file** after implementation is complete (optional)
 
 ## Architecture Validation
 
@@ -119,8 +137,8 @@ To check architecture compliance:
 grep -r "@\(Component\|Service\|Repository\|Entity\|Table\|RestController\)" src/main/kotlin/com/cinelux/*/domain/
 # Should return nothing
 
-# Check dependency direction: domain shouldn't import from adapter
-grep -r "import.*adapter" src/main/kotlin/com/cinelux/*/domain/
+# Check dependency direction: domain shouldn't import from infrastructure
+grep -r "import.*infrastructure" src/main/kotlin/com/cinelux/*/domain/
 # Should return nothing
 ```
 
@@ -128,7 +146,7 @@ grep -r "import.*adapter" src/main/kotlin/com/cinelux/*/domain/
 
 When adding new bounded contexts:
 1. Create new top-level package: `com.cinelux.screening/`
-2. Duplicate the structure: domain/ → application/ → adapter/
+2. Duplicate the structure: domain/ → application/ → infrastructure/
 3. Define context map relationships in `.claude/rules/context-map.md`
 4. Use domain events for cross-context communication
 

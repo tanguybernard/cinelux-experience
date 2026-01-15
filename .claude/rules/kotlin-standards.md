@@ -68,7 +68,7 @@ companion object {
 ```kotlin
 // ✅ All lowercase, no underscores
 package com.cinelux.booking.domain.model
-package com.cinelux.booking.adapter.input.rest
+package com.cinelux.booking.infrastructure.api.rest
 
 // ❌ Avoid
 package com.cinelux.Booking

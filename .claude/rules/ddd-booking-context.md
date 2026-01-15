@@ -263,7 +263,7 @@ interface SeatAvailabilityChecker {
 }
 
 class SeatAvailabilityCheckerImpl(
-    private val bookingRepository: BookingRepository  // Port, not adapter!
+    private val bookingRepository: BookingRepository  // Port, not infrastructure!
 ) : SeatAvailabilityChecker {
 
     override fun isAvailable(seat: Seat, showTime: ShowTimeReference): Boolean {
@@ -385,12 +385,12 @@ Rules that MUST always be true in the Booking Context:
 
 ---
 
-## Repository Contracts (Output Ports)
+## Repository Contracts (SPI Ports)
 
-Repositories are **output ports** defined in `application/port/output/`.
+Repositories are **SPI ports** (Service Provider Interface) defined in `application/port/spi/`.
 
 ```kotlin
-package com.cinelux.booking.application.port.output
+package com.cinelux.booking.application.port.spi
 
 interface BookingRepository {
     fun save(booking: Booking): Booking
@@ -442,7 +442,7 @@ data class Booking(...) {
 @PostMapping("/confirm")
 fun confirm(@PathVariable id: String) {
     val booking = repo.findById(id)
-    if (booking.status == BookingStatus.PENDING) {  // Business logic in adapter!
+    if (booking.status == BookingStatus.PENDING) {  // Business logic in infrastructure!
         booking.status = BookingStatus.CONFIRMED
         repo.save(booking)
     }

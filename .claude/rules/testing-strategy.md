@@ -42,7 +42,7 @@ Domain Unit Tests (many)
 2. **Acceptance Features** (Cucumber)
    - Use case scenarios
    - Application layer behavior
-   - Mock adapters
+   - Mock infrastructure
 
 3. **E2E Features** (Cucumber + Spring Boot Test)
    - Full stack integration
@@ -294,15 +294,15 @@ Feature: Complete Booking Journey
 
 ### Acceptance Test Step Definitions
 
-Step definitions for acceptance tests mock the adapters and test use case logic.
+Step definitions for acceptance tests mock the infrastructure and test use case logic.
 
 **File**: `src/test/kotlin/com/cinelux/booking/acceptance/steps/BookingSteps.kt`
 
 ```kotlin
 package com.cinelux.booking.acceptance.steps
 
-import com.cinelux.booking.application.port.input.*
-import com.cinelux.booking.application.port.output.*
+import com.cinelux.booking.application.port.api.*
+import com.cinelux.booking.application.port.spi.*
 import com.cinelux.booking.application.usecase.BookSeatUseCaseImpl
 import com.cinelux.booking.domain.model.*
 import io.cucumber.java.en.*
@@ -566,7 +566,7 @@ Create in-memory fakes instead of mocks for cleaner tests.
 ```kotlin
 package com.cinelux.booking.acceptance.fake
 
-import com.cinelux.booking.application.port.output.BookingRepository
+import com.cinelux.booking.application.port.spi.BookingRepository
 import com.cinelux.booking.domain.model.*
 
 class FakeBookingRepository : BookingRepository {
