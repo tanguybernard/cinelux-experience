@@ -1,7 +1,6 @@
 package com.cinelux.booking.application.port.api
 
 import com.cinelux.booking.domain.model.Seat
-import com.cinelux.booking.domain.model.SeatSection
 
 /**
  * API Port (driving) - Find available seats for a showtime
@@ -11,8 +10,7 @@ interface FindAvailableSeatsUseCase {
 }
 
 data class FindAvailableSeatsQuery(
-    val showTimeId: String,
-    val sectionFilter: SeatSection? = null
+    val showTimeId: String
 )
 
 data class AvailableSeatsResult(
@@ -24,4 +22,8 @@ data class AvailableSeatsResult(
     val bookedCount: Int get() = bookedSeats.size
 
     fun hasAvailableSeats(): Boolean = availableSeats.isNotEmpty()
+
+    fun isSeatAvailable(seat: Seat): Boolean = availableSeats.contains(seat)
+
+    fun isSeatBooked(seat: Seat): Boolean = bookedSeats.contains(seat)
 }

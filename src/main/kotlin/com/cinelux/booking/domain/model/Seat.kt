@@ -2,8 +2,7 @@ package com.cinelux.booking.domain.model
 
 data class Seat(
     val row: String,
-    val number: Int,
-    val section: SeatSection
+    val number: Int
 ) {
     init {
         require(row.matches(Regex("^[A-Z]$"))) {
