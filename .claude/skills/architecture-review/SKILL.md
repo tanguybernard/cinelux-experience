@@ -101,7 +101,7 @@ grep -rE "@(Component|Service|Repository)" src/main/kotlin/com/cinelux/*/applica
 |---------|-----------|
 | Booking | Reservation, Ticket, Order |
 | Seat | Chair, Position |
-| ShowTime | Screening, Schedule |
+| ShowTime | Screening, Schedule, Movie |
 | Customer | User, Client |
 | BookingStatus | State, Status (without Booking prefix) |
 
@@ -111,6 +111,7 @@ grep -rE "@(Component|Service|Repository)" src/main/kotlin/com/cinelux/*/applica
 grep -ri "class.*Reservation" src/main/kotlin/com/cinelux/booking/
 grep -ri "class.*User[^N]" src/main/kotlin/com/cinelux/booking/  # UserN allows UserId
 grep -ri "class.*Order" src/main/kotlin/com/cinelux/booking/
+grep -ri "class.*Movie" src/main/kotlin/com/cinelux/booking/  # Use ShowTime, not Movie
 ```
 
 ### 6. Package Structure Validation
