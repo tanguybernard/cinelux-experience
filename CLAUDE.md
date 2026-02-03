@@ -25,17 +25,22 @@ Infrastructure → Ports → Application → Domain
 
 ### Domain-Driven Design
 
-Starting with **Booking Context** as our core bounded context.
+The system is organized into **bounded contexts**, each owning its domain model.
 
 **Ubiquitous Language** (Booking Context):
 - `Booking`: Aggregate root representing a seat reservation
 - `Seat`: Value object identifying a physical cinema seat
-- `ShowTime`: When a movie is screened
+- `ShowTimeReference`: Reference to a showtime from Screening context
 - `BookingStatus`: States (Pending, Confirmed, Cancelled)
 - `Customer`: Entity representing the person booking
 
+**Ubiquitous Language** (Screening Context):
+- `ShowTime`: Aggregate root representing a movie screening
+- `ShowTimeId`: Value object for showtime identity
+- `Hall`: Value object representing a cinema hall
+- `DayOfWeek`: Day when the screening occurs (uses `java.time.DayOfWeek`)
+
 **Future Contexts** (to be added as needed):
-- Screening Context (movies, schedules, halls)
 - Payment Context (transactions, pricing)
 - Customer Context (accounts, loyalty)
 
@@ -60,12 +65,28 @@ src/main/kotlin/com/cinelux/
 │       │   ├── persistence/    # JPA repositories, entities
 │       │   └── messaging/      # Event publishers
 │       └── config/             # Spring configuration
+│
+├── screening/                  # Screening Bounded Context
+│   ├── domain/
+│   │   └── model/              # ShowTime, Hall, ShowTimeId
+│   ├── application/
+│   │   ├── usecase/            # ListShowTimesUseCaseImpl
+│   │   └── port/
+│   │       ├── api/            # ListShowTimesUseCase
+│   │       └── spi/            # ShowTimeRepository
+│   └── infrastructure/         # (future: REST, persistence)
 
 src/test/kotlin/com/cinelux/
 ├── booking/
 │   ├── domain/                 # Unit tests (no Spring context)
 │   ├── application/            # Use case tests (mocked ports)
-│   └── infrastructure/         # Integration tests (Spring Boot Test)
+│   └── acceptance/             # BDD acceptance tests (Cucumber)
+│
+├── screening/
+│   ├── domain/                 # Unit tests for ShowTime, Hall
+│   └── acceptance/             # BDD acceptance tests (Cucumber)
+│
+└── architecture/               # ArchUnit architecture tests
 ```
 
 ## Technology Stack
@@ -144,11 +165,12 @@ grep -r "import.*infrastructure" src/main/kotlin/com/cinelux/*/domain/
 
 ## Expanding to Multiple Contexts
 
-When adding new bounded contexts:
-1. Create new top-level package: `com.cinelux.screening/`
+When adding new bounded contexts (see `screening/` as example):
+1. Create new top-level package: `com.cinelux.<context>/`
 2. Duplicate the structure: domain/ → application/ → infrastructure/
 3. Define context map relationships in `.claude/rules/context-map.md`
 4. Use domain events for cross-context communication
+5. Add separate Cucumber test runner for the new context
 
 ## Getting Started
 
