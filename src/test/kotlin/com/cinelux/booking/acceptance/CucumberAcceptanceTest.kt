@@ -7,7 +7,7 @@ import org.junit.platform.suite.api.Suite
 
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("features")
+@SelectClasspathResource("features/booking")
 @ConfigurationParameter(key = "cucumber.plugin", value = "pretty, html:target/cucumber-reports/acceptance.html")
 @ConfigurationParameter(key = "cucumber.glue", value = "com.cinelux.booking.acceptance.steps")
 @ConfigurationParameter(key = "cucumber.filter.tags", value = "not @wip")
