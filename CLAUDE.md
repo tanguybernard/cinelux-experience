@@ -30,7 +30,8 @@ The system is organized into **bounded contexts**, each owning its domain model.
 **Bounded Contexts**: Booking, Screening
 **Future Contexts**: Payment, Customer
 
-See `.claude/rules/ddd-booking-context.md` for detailed ubiquitous language, domain model, and invariants.
+See `.claude/rules/ddd-strategic-design.md` for cross-context rules and context map.
+See `.claude/rules/ddd-booking-context.md` and `.claude/rules/ddd-screening-context.md` for context-specific domain models and invariants.
 
 ## Package Structure
 
@@ -148,14 +149,17 @@ Use `/architecture-review` skill for comprehensive compliance checks.
 When adding new bounded contexts (see `screening/` as example):
 1. Create new top-level package: `com.cinelux.<context>/`
 2. Duplicate the structure: domain/ → application/ → infrastructure/
-3. Define context map relationships in `.claude/rules/context-map.md`
-4. Use domain events for cross-context communication
-5. Add separate Cucumber test runner for the new context
+3. Update context map in `.claude/rules/ddd-strategic-design.md`
+4. Create a DDD rules file: `.claude/rules/ddd-<context>-context.md`
+5. Use domain events for cross-context communication
+6. Add separate Cucumber test runner for the new context
 
 ## Getting Started
 
 See `.claude/rules/` for detailed guidelines:
 - `hexagonal-architecture.md` - Layer rules with Kotlin examples
-- `ddd-booking-context.md` - Domain model design
+- `ddd-strategic-design.md` - Context map, cross-context rules, general DDD patterns
+- `ddd-booking-context.md` - Booking domain model and invariants
+- `ddd-screening-context.md` - Screening domain model and invariants
 - `kotlin-standards.md` - Language conventions
 - `testing-strategy.md` - Test patterns per layer

@@ -200,32 +200,6 @@ value class ShowTimeId(val value: String) {
 
 ---
 
-### Entity References
-
-When referencing entities from other contexts, use minimal references:
-
-```kotlin
-package com.cinelux.booking.domain.model
-
-// Don't embed full ShowTime entity - just reference its ID
-data class ShowTimeReference(
-    val id: ShowTimeId,
-    val movieTitle: String,        // Denormalized for display
-    val startTime: Instant,         // Cached for validation
-    val hallId: String              // Which hall this screening is in
-)
-
-// Later, when Screening context exists, it will own the full ShowTime entity
-// Booking context only needs minimal info
-```
-
-**Why use references:**
-- Prevents tight coupling between contexts
-- Each context owns its aggregates
-- Keeps transaction boundaries clear
-
----
-
 ### Enumerations
 
 ```kotlin
@@ -408,61 +382,6 @@ interface BookingRepository {
 
 ---
 
-## Anti-Patterns to Avoid
-
-### ❌ Anemic Domain Model
-```kotlin
-// WRONG - No business logic, just getters/setters
-data class Booking(
-    var status: BookingStatus
-)
-
-// Business logic in service instead of entity
-class BookingService {
-    fun confirmBooking(booking: Booking) {
-        booking.status = BookingStatus.CONFIRMED  // BAD!
-    }
-}
-```
-
-### ✅ Rich Domain Model
-```kotlin
-// CORRECT - Business logic in entity
-data class Booking(...) {
-    fun confirm(): Booking {
-        require(status == BookingStatus.PENDING)
-        return copy(status = BookingStatus.CONFIRMED)
-    }
-}
-```
-
-### ❌ Smart UI Anti-Pattern
-```kotlin
-// WRONG - Business rules in controller
-@PostMapping("/confirm")
-fun confirm(@PathVariable id: String) {
-    val booking = repo.findById(id)
-    if (booking.status == BookingStatus.PENDING) {  // Business logic in infrastructure!
-        booking.status = BookingStatus.CONFIRMED
-        repo.save(booking)
-    }
-}
-```
-
-### ✅ Correct Layering
-```kotlin
-// Use case handles workflow
-class ConfirmBookingUseCase {
-    override fun execute(command: ConfirmBookingCommand) {
-        val booking = repository.findById(command.bookingId)
-        val confirmed = booking.confirm()  // Domain logic
-        repository.save(confirmed)
-    }
-}
-```
-
----
-
 ## Testing Domain Model
 
 Domain tests should be pure - no Spring, no database, no mocks.
@@ -512,20 +431,3 @@ class BookingTest {
     )
 }
 ```
-
----
-
-## Evolving the Domain
-
-As you learn more about the business:
-
-1. **Refine Ubiquitous Language**: Update terms based on domain expert feedback
-2. **Split Aggregates**: If performance suffers, consider smaller aggregates
-3. **Extract Bounded Contexts**: When complexity grows, identify new contexts
-4. **Add Domain Events**: Make implicit processes explicit
-
-**Example Evolution**:
-- Start: `Booking` has simple `confirm()` method
-- Later: Extract `BookingPolicy` to handle complex confirmation rules
-- Later: Introduce `BookingLifecycle` domain service for state management
-- Later: Split into `ReservationContext` and `TicketingContext`
