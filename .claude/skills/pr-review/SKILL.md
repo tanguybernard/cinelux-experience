@@ -49,10 +49,8 @@ When this skill is invoked, you MUST:
 
 ```
 Task 1 (Security):
-- subagent_type: "Explore"
+- subagent_type: "security-reviewer"
 - prompt: |
-    You are the security-reviewer agent. See .claude/agents/security-reviewer.md for full instructions.
-
     Focus on these recently changed files:
     {list of changed files from git diff}
 
@@ -60,10 +58,8 @@ Task 1 (Security):
     Return findings in the specified output format.
 
 Task 2 (Performance):
-- subagent_type: "Explore"
+- subagent_type: "performance-reviewer"
 - prompt: |
-    You are the performance-reviewer agent. See .claude/agents/performance-reviewer.md for full instructions.
-
     Focus on these recently changed files:
     {list of changed files from git diff}
 

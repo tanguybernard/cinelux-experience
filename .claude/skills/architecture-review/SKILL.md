@@ -1,7 +1,7 @@
 ---
 name: architecture-review
 description: Reviews code for Hexagonal Architecture and DDD compliance. Use when reviewing pull requests, implementing new features, or validating architecture follows project guidelines. Checks domain purity, dependency direction, port correctness, and ubiquitous language.
-allowed-tools: Read, Grep, Glob, Bash(grep:*)
+allowed-tools: Read, Grep, Glob
 ---
 
 # Architecture Review Skill
@@ -21,20 +21,14 @@ Review code for **Hexagonal Architecture** and **Domain-Driven Design** complian
 
 The domain layer (`*/domain/`) must have **zero framework dependencies**.
 
-**Check for forbidden imports:**
-```bash
-# Must return NOTHING
-grep -r "import org.springframework" src/main/kotlin/com/cinelux/*/domain/
-grep -r "import jakarta" src/main/kotlin/com/cinelux/*/domain/
-grep -r "import javax" src/main/kotlin/com/cinelux/*/domain/
-grep -r "import com.fasterxml.jackson" src/main/kotlin/com/cinelux/*/domain/
-```
+**Check for forbidden imports** (all must return no results):
+- Use Grep tool with pattern `import org.springframework` in `src/main/kotlin/com/cinelux/*/domain/`
+- Use Grep tool with pattern `import jakarta` in `src/main/kotlin/com/cinelux/*/domain/`
+- Use Grep tool with pattern `import javax` in `src/main/kotlin/com/cinelux/*/domain/`
+- Use Grep tool with pattern `import com.fasterxml.jackson` in `src/main/kotlin/com/cinelux/*/domain/`
 
-**Check for forbidden annotations:**
-```bash
-# Must return NOTHING
-grep -rE "@(Component|Service|Repository|Entity|Table|Id|Column|RestController|Autowired|Bean|Configuration|Valid|NotNull|NotBlank)" src/main/kotlin/com/cinelux/*/domain/
-```
+**Check for forbidden annotations** (must return no results):
+- Use Grep tool with pattern `@(Component|Service|Repository|Entity|Table|Id|Column|RestController|Autowired|Bean|Configuration|Valid|NotNull|NotBlank)` in `src/main/kotlin/com/cinelux/*/domain/`
 
 **Allowed in domain:**
 - Kotlin stdlib only
@@ -46,18 +40,12 @@ grep -rE "@(Component|Service|Repository|Entity|Table|Id|Column|RestController|A
 
 Dependencies must flow **inward only**: `Infrastructure -> Ports -> Application -> Domain`
 
-**Check domain doesn't import infrastructure:**
-```bash
-# Must return NOTHING
-grep -r "import.*infrastructure" src/main/kotlin/com/cinelux/*/domain/
-grep -r "import.*application" src/main/kotlin/com/cinelux/*/domain/
-```
+**Check domain doesn't import infrastructure** (must return no results):
+- Use Grep tool with pattern `import.*infrastructure` in `src/main/kotlin/com/cinelux/*/domain/`
+- Use Grep tool with pattern `import.*application` in `src/main/kotlin/com/cinelux/*/domain/`
 
-**Check application doesn't import infrastructure:**
-```bash
-# Must return NOTHING
-grep -r "import.*infrastructure" src/main/kotlin/com/cinelux/*/application/
-```
+**Check application doesn't import infrastructure** (must return no results):
+- Use Grep tool with pattern `import.*infrastructure` in `src/main/kotlin/com/cinelux/*/application/`
 
 ### 3. Port Correctness
 
@@ -71,11 +59,8 @@ grep -r "import.*infrastructure" src/main/kotlin/com/cinelux/*/application/
 - Repository interfaces, external service interfaces
 - No framework annotations
 
-**Check ports have no annotations:**
-```bash
-# Must return NOTHING
-grep -rE "@(Component|Service|Repository)" src/main/kotlin/com/cinelux/*/application/port/
-```
+**Check ports have no annotations** (must return no results):
+- Use Grep tool with pattern `@(Component|Service|Repository)` in `src/main/kotlin/com/cinelux/*/application/port/`
 
 ### 4. Infrastructure Responsibilities
 
@@ -98,14 +83,11 @@ grep -rE "@(Component|Service|Repository)" src/main/kotlin/com/cinelux/*/applica
 
 See `.claude/rules/ddd-booking-context.md` for the full ubiquitous language reference (correct terms, forbidden terms, domain model).
 
-**Check for forbidden terms:**
-```bash
-# Review results - these terms should not appear in booking context code
-grep -ri "class.*Reservation" src/main/kotlin/com/cinelux/booking/
-grep -ri "class.*User[^N]" src/main/kotlin/com/cinelux/booking/  # UserN allows UserId
-grep -ri "class.*Order" src/main/kotlin/com/cinelux/booking/
-grep -ri "class.*Movie" src/main/kotlin/com/cinelux/booking/  # Use ShowTime, not Movie
-```
+**Check for forbidden terms** (review results — these should not appear in booking context code):
+- Use Grep tool with pattern `class.*Reservation` (case insensitive) in `src/main/kotlin/com/cinelux/booking/`
+- Use Grep tool with pattern `class.*User[^N]` (case insensitive) in `src/main/kotlin/com/cinelux/booking/` — allows UserId
+- Use Grep tool with pattern `class.*Order` (case insensitive) in `src/main/kotlin/com/cinelux/booking/`
+- Use Grep tool with pattern `class.*Movie` (case insensitive) in `src/main/kotlin/com/cinelux/booking/` — use ShowTime, not Movie
 
 ### 6. Package Structure Validation
 
