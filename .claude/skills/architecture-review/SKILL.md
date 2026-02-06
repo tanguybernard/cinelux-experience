@@ -96,14 +96,7 @@ grep -rE "@(Component|Service|Repository)" src/main/kotlin/com/cinelux/*/applica
 
 ### 5. Ubiquitous Language
 
-**Booking Context terms:**
-| Correct | Forbidden |
-|---------|-----------|
-| Booking | Reservation, Ticket, Order |
-| Seat | Chair, Position |
-| ShowTime | Screening, Schedule, Movie |
-| Customer | User, Client |
-| BookingStatus | State, Status (without Booking prefix) |
+See `.claude/rules/ddd-booking-context.md` for the full ubiquitous language reference (correct terms, forbidden terms, domain model).
 
 **Check for forbidden terms:**
 ```bash
@@ -214,5 +207,5 @@ interface BookingRepository
 
 ## References
 
-- See `.claude/rules/hexagonal-architecture.md` for detailed layer rules
-- See `.claude/rules/ddd-booking-context.md` for domain model guidelines
+- `.claude/rules/hexagonal-architecture.md` - Source of truth for layer rules and dependency direction
+- `.claude/rules/ddd-booking-context.md` - Source of truth for domain model and ubiquitous language

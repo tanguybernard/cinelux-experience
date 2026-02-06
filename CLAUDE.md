@@ -27,22 +27,10 @@ Infrastructure → Ports → Application → Domain
 
 The system is organized into **bounded contexts**, each owning its domain model.
 
-**Ubiquitous Language** (Booking Context):
-- `Booking`: Aggregate root representing a seat reservation
-- `Seat`: Value object identifying a physical cinema seat
-- `ShowTimeReference`: Reference to a showtime from Screening context
-- `BookingStatus`: States (Pending, Confirmed, Cancelled)
-- `Customer`: Entity representing the person booking
+**Bounded Contexts**: Booking, Screening
+**Future Contexts**: Payment, Customer
 
-**Ubiquitous Language** (Screening Context):
-- `ShowTime`: Aggregate root representing a movie screening
-- `ShowTimeId`: Value object for showtime identity
-- `Hall`: Value object representing a cinema hall
-- `DayOfWeek`: Day when the screening occurs (uses `java.time.DayOfWeek`)
-
-**Future Contexts** (to be added as needed):
-- Payment Context (transactions, pricing)
-- Customer Context (accounts, loyalty)
+See `.claude/rules/ddd-booking-context.md` for detailed ubiquitous language, domain model, and invariants.
 
 ## Package Structure
 
@@ -152,16 +140,8 @@ When implementing new features, Claude must:
 
 ## Architecture Validation
 
-To check architecture compliance:
-```bash
-# Domain layer should have ZERO Spring/JPA imports
-grep -r "@\(Component\|Service\|Repository\|Entity\|Table\|RestController\)" src/main/kotlin/com/cinelux/*/domain/
-# Should return nothing
-
-# Check dependency direction: domain shouldn't import from infrastructure
-grep -r "import.*infrastructure" src/main/kotlin/com/cinelux/*/domain/
-# Should return nothing
-```
+See `.claude/rules/hexagonal-architecture.md` for detailed layer rules and validation commands.
+Use `/architecture-review` skill for comprehensive compliance checks.
 
 ## Expanding to Multiple Contexts
 

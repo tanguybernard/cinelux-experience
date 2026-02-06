@@ -226,14 +226,10 @@ After successful implementation:
 | Ports | Domain | Infrastructure, Spring annotations |
 | Infrastructure | Everything | - |
 
-## Ubiquitous Language (Booking Context)
+## Ubiquitous Language
 
-| Use | Don't Use |
-|-----|-----------|
-| Booking | Reservation, Ticket, Order |
-| Seat | Chair, Position |
-| ShowTime | Screening, Schedule |
-| Customer | User, Client |
+See `.claude/rules/ddd-booking-context.md` for correct/forbidden terms per bounded context.
+Always verify terminology compliance before planning and implementing.
 
 ---
 
